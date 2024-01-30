@@ -250,7 +250,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         elif flag == 'slider_thresh':
             self.spinbox_thresh.setValue(x / 100)
             self.label_status.setText(' Threshold: %s' % str(x/100))
-            self.video_thread.threshold = x/100  # TODO: 配置网络检测阈值, 还有一个滑条
+            self.video_thread.threshold = x/100
         elif flag == 'spinbox_size':
             self.slider_pointsize.setValue(x*5)
         elif flag == 'slider_size':
