@@ -31,9 +31,6 @@ class RtspWindow(QWidget, Ui_Form):
         self.setupUi(self)
 
 
-
-
-
 class VideoPlayerThread(QThread):
     video_progressbar = Signal(int)
     pre_frame_changed = Signal(np.ndarray)
@@ -94,7 +91,6 @@ class VideoPlayerThread(QThread):
                         cv2.waitKey(int(60))
                         self.detect_fps.emit(int(self.send_delay / (time.time() - start_time)))
                         start_time = time.time()
-
 
 
 class MainWindow(QMainWindow, Ui_MainWindow):
@@ -159,6 +155,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                                                    "video file (*.mp4 *.avi *.wmv *.mkv);;All Files (*)")
         if file_name:
             self.video_thread.video_src = "file"
+            self.label_status.setText('Loading video：{}'.format(os.path.basename(file_name)))
+            new_config = {"fold": os.path.dirname(file_name)}
+            new_json = json.dumps(new_config, ensure_ascii=False, indent=2)
+            with open('config/fold_cfg.json', 'w', encoding='utf-8') as f:
+                f.write(new_json)
             self.video_thread.video = cv2.VideoCapture(file_name)
             # 获取视频第一帧
             ret, frame = self.video_thread.video.read()
@@ -235,7 +236,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 img_src_ = cv2.resize(img_src, (nw, nh))
 
             frame = cv2.cvtColor(img_src_, cv2.COLOR_BGR2RGB)
-            img = QImage(frame.data, frame.shape[1], frame.shape[0], frame.shape[2] * frame.shape[1], QImage.Format_RGB888)
+            img = QImage(frame.data, frame.shape[1], frame.shape[0], frame.shape[2] * frame.shape[1],
+                         QImage.Format_RGB888)
             label.setPixmap(QPixmap.fromImage(img))
 
     def change_val(self, x, flag):
@@ -249,12 +251,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.slider_thresh.setValue(int(x * 100))
         elif flag == 'slider_thresh':
             self.spinbox_thresh.setValue(x / 100)
-            self.label_status.setText(' Threshold: %s' % str(x/100))
-            self.video_thread.threshold = x/100
+            self.label_status.setText(' Threshold: %s' % str(x / 100))
+            self.video_thread.threshold = x / 100
         elif flag == 'spinbox_size':
-            self.slider_pointsize.setValue(x*5)
+            self.slider_pointsize.setValue(x * 5)
         elif flag == 'slider_size':
-            self.spinbox_pointsize.setValue(x/5)
+            self.spinbox_pointsize.setValue(x / 5)
             self.label_status.setText('point size: %s ' % str(x))
             self.video_thread.size = x
 
