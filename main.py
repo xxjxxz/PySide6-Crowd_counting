@@ -20,10 +20,10 @@ from utils.capnums import Camera
 #     def __init__(self):
 #         self.parser = argparse.ArgumentParser('P2PNet evaluation script', parents=[get_args_parser()])
 #         self.args = self.parser.parse_args()
-#         self.model = model_init(self.args)
+#         self.models = model_init(self.args)
 #
 #     def predict(self, img):
-#         return predict(self.model, img)
+#         return predict(self.models, img)
 
 class RtspWindow(QWidget, Ui_Form):
     def __init__(self):

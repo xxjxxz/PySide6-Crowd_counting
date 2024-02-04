@@ -47,7 +47,7 @@ class VideoPlayThread(QThread):
             self.args.show = check_imshow(warn=True)
 
         # GUI args
-        self.used_model_name = None  # The detection model name to use
+        self.used_model_name = None  # The detection models name to use
         self.new_model_name = None  # Models that change in real time
         self.source = ''  # input source
         self.stop_dtc = False  # Termination detection
@@ -81,7 +81,7 @@ class VideoPlayThread(QThread):
             if self.args.verbose:
                 LOGGER.info('')
 
-            # set model
+            # set models
             self.yolo2main_status_msg.emit('Loding Model...')
             if not self.model:
                 self.setup_model(self.new_model_name)
@@ -94,7 +94,7 @@ class VideoPlayThread(QThread):
             if self.save_res or self.save_txt:
                 (self.save_dir / 'labels' if self.save_txt else self.save_dir).mkdir(parents=True, exist_ok=True)
 
-            # warmup model
+            # warmup models
             if not self.done_warmup:
                 self.model.warmup(imgsz=(1 if self.model.pt or self.model.triton else self.dataset.bs, 3, *self.imgsz))
                 self.done_warmup = True
@@ -115,7 +115,7 @@ class VideoPlayThread(QThread):
                     self.yolo2main_status_msg.emit('Detection terminated!')
                     break
 
-                # Change the model midway
+                # Change the models midway
                 if self.used_model_name != self.new_model_name:
                     # self.yolo2main_status_msg.emit('Change Model...')
                     self.setup_model(self.new_model_name)
@@ -257,7 +257,7 @@ class VideoPlayThread(QThread):
         # log_string += '%gx%g ' % im.shape[2:]         # !!! don't add img size~
         self.annotator = self.get_annotator(im0)
 
-        det = results[idx].boxes  # TODO: make boxes inherit from tensors
+        det = results[idx].boxes
 
         if len(det) == 0:
             return f'{log_string}(no detections), '  # if no, send this~~
@@ -305,19 +305,19 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         UIFuncitons.shadow_style(self, self.Fps_QF, QColor(170, 128, 213))
         UIFuncitons.shadow_style(self, self.Model_QF, QColor(64, 186, 193))
 
-        # read model folder
+        # read models folder
         self.pt_list = os.listdir('./models')
         self.pt_list = [file for file in self.pt_list if file.endswith('.pt')]
         self.pt_list.sort(key=lambda x: os.path.getsize('./models/' + x))  # sort by file size
         self.model_box.clear()
         self.model_box.addItems(self.pt_list)
-        self.Qtimer_ModelBox = QTimer(self)  # Timer: Monitor model file changes every 2 seconds
+        self.Qtimer_ModelBox = QTimer(self)  # Timer: Monitor models file changes every 2 seconds
         self.Qtimer_ModelBox.timeout.connect(self.ModelBoxRefre)
         self.Qtimer_ModelBox.start(2000)
 
         # Yolo-v8 thread
         self.yolo_predict = YoloPredictor()  # Create a Yolo instance
-        self.select_model = self.model_box.currentText()  # default model
+        self.select_model = self.model_box.currentText()  # default models
         self.yolo_predict.new_model_name = "./models/%s" % self.select_model
         self.yolo_thread = QThread()  # Create yolo thread
         self.yolo_predict.yolo2main_pre_img.connect(lambda x: self.show_image(x, self.pre_video))
@@ -625,7 +625,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.show_status('Delay: %s ms' % str(x))
             self.yolo_predict.speed_thres = x  # ms
 
-    # change model
+    # change models
     def change_model(self, x):
         self.select_model = self.model_box.currentText()
         self.yolo_predict.new_model_name = "./models/%s" % self.select_model
@@ -643,7 +643,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     #     except Exception as e:
     #         self.show_status(e)
 
-    # Cycle monitoring model file changes
+    # Cycle monitoring models file changes
     def ModelBoxRefre(self):
         pt_list = os.listdir('./models')
         pt_list = [file for file in pt_list if file.endswith('.pt')]

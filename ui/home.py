@@ -879,7 +879,7 @@ class Ui_MainWindow(object):
         self.ToggleBotton_6.setLayoutDirection(Qt.LeftToRight)
         self.ToggleBotton_6.setAutoFillBackground(False)
         self.ToggleBotton_6.setStyleSheet(u"QPushButton{\n"
-"background-image: url(:img/model.png);\n"
+"background-image: url(:img/models.png);\n"
 "background-repeat: no-repeat;\n"
 "background-position: left center;\n"
 "border: none;\n"
