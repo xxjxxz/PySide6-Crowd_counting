@@ -83,14 +83,22 @@ class VideoPlayerThread(QThread):
                     if self.current_frames % self.send_delay == 0:
                         # TODO: 预测,目前没有网络，模拟预测
                         # predict, self.head_count = self.net.run(frame, self.threshold, self.size)
-                        predict = frame
+                        predict = self.pre_process(frame)
                         if self.save_flag:
                             out.write(predict)
-                        self.post_frame_changed.emit(frame)
+                        self.post_frame_changed.emit(predict)
                         self.head_count_changed.emit(self.head_count)
                         cv2.waitKey(int(60))
                         self.detect_fps.emit(int(self.send_delay / (time.time() - start_time)))
                         start_time = time.time()
+
+    @staticmethod
+    def pre_process(img):
+        # 对输入图像进行灰度化处理
+        img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        # 对灰度图进行高斯滤波
+        # blur = cv2.GaussianBlur(gray, (21, 21), 0)
+        return img
 
 
 class MainWindow(QMainWindow, Ui_MainWindow):
@@ -221,7 +229,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     @staticmethod
     def show_image(img_src, label):
         if img_src is not None:
-            ih, iw, _ = img_src.shape
+            ih, iw = img_src.shape[:2]
             w = label.geometry().width()
             h = label.geometry().height()
             if iw / w > ih / h:
