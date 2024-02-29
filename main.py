@@ -60,12 +60,9 @@ class VideoPlayerThread(QThread):
     def run(self):
         if self.video:
             total_frames = self.video.get(cv2.CAP_PROP_FRAME_COUNT) - 1
-            fps = self.video.get(cv2.CAP_PROP_FPS)
-            frame_size = (
-                int(self.video.get(cv2.CAP_PROP_FRAME_WIDTH)), int(self.video.get(cv2.CAP_PROP_FRAME_HEIGHT)))
 
             fourcc = cv2.VideoWriter_fourcc(*'XVID')
-            out = cv2.VideoWriter(f'output/output_{self.output_number}.avi', fourcc, fps, frame_size)
+            out = cv2.VideoWriter(f'output/output_{self.output_number}.avi', fourcc, 30, (640, 480))
             start_time = time.time()
             while True:
                 if not self.paused:
